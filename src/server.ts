@@ -3,9 +3,9 @@ import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import { envVars } from "./app/config/env";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 
 let server: Server;
-
 
 const bootStrap = async () => {
   try {
@@ -19,7 +19,11 @@ const bootStrap = async () => {
   }
 };
 
-bootStrap();
+//IIFE
+(async () => {
+  await bootStrap();
+  await seedSuperAdmin();
+})();
 
 //unhandled rejection error
 process.on("unhandledRejection", (error) => {
