@@ -14,20 +14,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
+const env_1 = require("./app/config/env");
+const seedSuperAdmin_1 = require("./app/utils/seedSuperAdmin");
 let server;
 const bootStrap = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield mongoose_1.default.connect("mongodb+srv://L2firstTodoWithExpress:lUOIN3OiXl6rSacd@cluster0.v7fwagz.mongodb.net/ph-tour-db?retryWrites=true&w=majority&appName=Cluster0");
+        yield mongoose_1.default.connect(env_1.envVars.DB_URL);
         console.log("✅ Connected to DB");
-        server = app_1.default.listen(5000, () => {
-            console.log("✅ Server in running or prot 5000");
+        server = app_1.default.listen(env_1.envVars.PORT, () => {
+            console.log(`✅ Server in running or prot ${env_1.envVars.PORT}`);
         });
     }
     catch (error) {
         console.log(error);
     }
 });
-bootStrap();
+//IIFE
+(() => __awaiter(void 0, void 0, void 0, function* () {
+    yield bootStrap();
+    yield (0, seedSuperAdmin_1.seedSuperAdmin)();
+}))();
 //unhandled rejection error
 process.on("unhandledRejection", (error) => {
     console.log("Unhandled Rejection detected .. Server shutting down..", error);
