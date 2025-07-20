@@ -4,11 +4,11 @@ import { AnyZodObject } from "zod";
 // Higher Order function.
 export const validateRequest =
   (zodSchema: AnyZodObject) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      req.body = await zodSchema.parseAsync(req.body);
-      next();
-    } catch (error) {
-      next(error);
-    }
-  };
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        req.body = await zodSchema.parseAsync(req.body);
+        next();
+      } catch (error) {
+        next(error);
+      }
+    };

@@ -2,10 +2,21 @@ import z from "zod";
 import { IsActive, Role } from "./user.interface";
 
 export const createUserZodSchema = z.object({
-  name: z
-    .string({ invalid_type_error: "Name must be string" })
-    .min(2, { message: "Name too short. Minimum 2 character long" })
-    .max(50, { message: "Name too long" }),
+  name: z.object(
+    {
+      firstName: z.string({ invalid_type_error: "Name must be string" })
+        .min(2, { message: "Name too short. Minimum 2 character long" })
+        .max(50, { message: "Name too long" }),
+      lastName: z.object({
+        nicName: z.string({ invalid_type_error: "Name must be string" })
+          .min(2, { message: "Name too short. Minimum 2 character long" })
+          .max(50, { message: "Name too long" }),
+        surName: z.string({ invalid_type_error: "Name must be string" })
+          .min(2, { message: "Name too short. Minimum 2 character long" })
+          .max(50, { message: "Name too long" }),
+      })
+    }
+  ),
   email: z
     .string({ invalid_type_error: "Email must be string" })
     .email({ message: "Invalid email format." })
