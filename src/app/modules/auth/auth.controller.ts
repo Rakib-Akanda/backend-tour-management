@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
@@ -9,10 +10,44 @@ import { setAuthCookie } from "../../utils/setCookie";
 import { JwtPayload } from "jsonwebtoken";
 import { createUserToken } from "../../utils/userTokens";
 import { envVars } from "../../config/env";
+import passport from "passport";
 
 const credentialsLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loginInfo = await AuthServices.credentialsLogin(req.body);
+    // const loginInfo = await AuthServices.credentialsLogin(req.body);
+    passport.authenticate("local", async (error: any, user: any, info: any) => {
+
+      if (error) {
+        // DON"T USE
+        // throw new AppError(401, "Some error")
+        // next(error)
+        // return new AppError(StatusCodes.UNAUTHORIZED, error)
+
+        // use it 
+        // return next(error)
+        return next(new AppError(StatusCodes.UNAUTHORIZED, error))
+      }
+      if (!user) {
+        // return new AppError(StatusCodes.UNAUTHORIZED, info.message)
+        return next(new AppError(StatusCodes.UNAUTHORIZED, info.message || "Authentication failed"));
+      }
+      const userToken = await createUserToken(user)
+      const { password: pass, ...rest } = user.toObject();
+
+      // setAuthCookie(res, loginInfo);
+      setAuthCookie(res, userToken);
+
+      sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: "User Logged In Successfully",
+        data: {
+          accessToken: userToken.accessToken,
+          refreshToken: userToken.refreshToken,
+          user: rest
+        },
+      });
+    })(req, res, next)
 
     // res.cookie("accessToken", loginInfo.accessToken, {
     //   httpOnly: true,
@@ -24,14 +59,14 @@ const credentialsLogin = catchAsync(
     //   secure: false,
     // });
 
-    setAuthCookie(res, loginInfo);
+    // setAuthCookie(res, loginInfo);
 
-    sendResponse(res, {
-      success: true,
-      statusCode: StatusCodes.OK,
-      message: "User Logged In Successfully",
-      data: loginInfo,
-    });
+    // sendResponse(res, {
+    //   success: true,
+    //   statusCode: StatusCodes.OK,
+    //   message: "User Logged In Successfully",
+    //   data: loginInfo,
+    // });
   }
 );
 const getNewAccessToken = catchAsync(
@@ -96,7 +131,7 @@ const googleCallbackController = catchAsync(
     }
     // /booking => booking, => "/" = ""
     const user = req.user;
-    console.log("user", user);
+    // console.log("user", user);
     if (!user) {
       throw new AppError(StatusCodes.NOT_FOUND, "User not found")
     }
