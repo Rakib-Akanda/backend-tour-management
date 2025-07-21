@@ -13,6 +13,7 @@ const authProviderSchema = new mongoose_1.Schema({
 const userSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    age: { type: Number },
     password: { type: String },
     role: {
         type: String,

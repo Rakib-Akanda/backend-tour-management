@@ -16,7 +16,7 @@ const userSchema = new Schema<IUser>(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    age: Number,
+    age: { type: Number },
     password: { type: String },
     role: {
       type: String,

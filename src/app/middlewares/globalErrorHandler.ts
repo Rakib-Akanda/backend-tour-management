@@ -16,13 +16,14 @@ export const globalErrorHandler = (
   next: NextFunction
 ) => {
   if (envVars.NODE_ENV === "development") {
+    // eslint-disable-next-line no-console
     console.log(err);
   }
   // error property
   /**
-   * Mongoose 
-   * zod 
-   * 
+   * Mongoose
+   * zod
+   *
    * */
 
   /**
@@ -30,32 +31,32 @@ export const globalErrorHandler = (
    * -duplicate
    * -CastError or Object Id
    * -Validation Error
-   * 
-   * 
+   *
+   *
    * */
 
   let statusCode = 500;
   let message = "Something Went Wrong!!";
-  let errorSources: TErrorSources[] = []
+  let errorSources: TErrorSources[] = [];
   // console.log(err);
   if (err.code === 11000) {
-    const simplifiedError = handleDuplicateError(err)
-    statusCode = simplifiedError.statusCode
-    message = simplifiedError.message
+    const simplifiedError = handleDuplicateError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
   } else if (err.name === "ZodError") {
-    const simplifiedError = handleZodError(err)
-    statusCode = simplifiedError.statusCode
-    message = simplifiedError.message
-    errorSources = simplifiedError.errorSources as TErrorSources[]
+    const simplifiedError = handleZodError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources as TErrorSources[];
   } else if (err.name === "CastError") {
-    const simplifiedError = handleCastError(err)
-    statusCode = simplifiedError.statusCode
-    message = simplifiedError.message
+    const simplifiedError = handleCastError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
   } else if (err.name === "ValidationError") {
-    const simplifiedError = handleValidationError(err)
-    statusCode = simplifiedError.statusCode
-    message = simplifiedError.message
-    errorSources = simplifiedError.errorSources as TErrorSources[]
+    const simplifiedError = handleValidationError(err);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources as TErrorSources[];
   } else if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;

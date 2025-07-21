@@ -54,4 +54,4 @@ router.delete(
 router.get("/tour-types", TourController.getAllTourTypes);
 router.get("/tour-types/:id", TourController.getSingleTourType);
 router.get("/:slug", TourController.getSingleTour);
-export const TourRoute = router;
+export const TourRoutes = router;
