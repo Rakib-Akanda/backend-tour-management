@@ -7,15 +7,28 @@ exports.updateUserZodSchema = exports.createUserZodSchema = void 0;
 const zod_1 = __importDefault(require("zod"));
 const user_interface_1 = require("./user.interface");
 exports.createUserZodSchema = zod_1.default.object({
-    name: zod_1.default
-        .string({ invalid_type_error: "Name must be string" })
-        .min(2, { message: "Name too short. Minimum 2 character long" })
-        .max(50, { message: "Name too long" }),
+    name: zod_1.default.object({
+        firstName: zod_1.default
+            .string({ invalid_type_error: "Name must be string" })
+            .min(2, { message: "Name too short. Minimum 2 character long" })
+            .max(50, { message: "Name too long" }),
+        lastName: zod_1.default.object({
+            nicName: zod_1.default
+                .string({ invalid_type_error: "Name must be string" })
+                .min(2, { message: "Name too short. Minimum 2 character long" })
+                .max(50, { message: "Name too long" }),
+            surName: zod_1.default
+                .string({ invalid_type_error: "Name must be string" })
+                .min(2, { message: "Name too short. Minimum 2 character long" })
+                .max(50, { message: "Name too long" }),
+        }),
+    }),
     email: zod_1.default
         .string({ invalid_type_error: "Email must be string" })
         .email({ message: "Invalid email format." })
         .min(8, { message: "Email must be at least 8 characters long." })
         .max(100, { message: "Email cannot exceed 100 characters." }),
+    age: zod_1.default.number({ invalid_type_error: "Age must be a number" }),
     // 1 uppercase, 1 special character, 1 digit, 8 character min
     password: zod_1.default
         .string({ invalid_type_error: "Password must be string." })

@@ -11,7 +11,7 @@ passport.use(
     new LocalStrategy({ usernameField: "email", passwordField: "password" }, async (email: string, password: string, done) => {
         try {
             const isUserExist = await User.findOne({ email });
-            console.log(isUserExist?.auths);
+            // console.log(isUserExist?.auths);
             if (!isUserExist) {
                 return done(null, false, { message: "User does not exist" })
             }
@@ -37,7 +37,7 @@ passport.use(
             return done(null, isUserExist)
 
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             done(error)
         }
     })
