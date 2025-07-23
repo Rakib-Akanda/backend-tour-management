@@ -33,6 +33,9 @@ const loadEnvVariables = () => {
         "SSL_SUCCESS_FRONTEND_URL",
         "SSL_FAIL_FRONTEND_URL",
         "SSL_CANCEL_FRONTEND_URL",
+        "CLOUDINARY_CLOUD_NAME",
+        "CLOUDINARY_API_KEY",
+        "CLOUDINARY_API_SECRET",
     ];
     requiredEnvVariables.forEach((key) => {
         if (!process.env[key]) {
@@ -67,6 +70,11 @@ const loadEnvVariables = () => {
             SSL_SUCCESS_FRONTEND_URL: process.env.SSL_SUCCESS_FRONTEND_URL,
             SSL_FAIL_FRONTEND_URL: process.env.SSL_FAIL_FRONTEND_URL,
             SSL_CANCEL_FRONTEND_URL: process.env.SSL_CANCEL_FRONTEND_URL,
+        },
+        cloudinary: {
+            CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+            CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+            CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
         },
     };
 };

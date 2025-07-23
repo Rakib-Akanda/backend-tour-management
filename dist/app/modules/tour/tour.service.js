@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TourService = void 0;
+const cloudinary_config_1 = require("../../config/cloudinary.config");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const QueryBuilder_1 = require("../../utils/QueryBuilder");
 const tour_constant_1 = require("./tour.constant");
@@ -50,10 +51,32 @@ const updateTour = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     if (!existingTour) {
         throw new AppError_1.default(404, "Tour not found");
     }
+    if (payload.images &&
+        payload.images.length > 0 &&
+        existingTour.images &&
+        existingTour.images.length > 0) {
+        payload.images = [...payload.images, ...existingTour.images];
+    }
+    if (payload.deleteImages &&
+        payload.deleteImages.length > 0 &&
+        existingTour.images &&
+        existingTour.images.length > 0) {
+        const restDBImages = existingTour.images.filter((imageUrl) => { var _a; return !((_a = payload.deleteImages) === null || _a === void 0 ? void 0 : _a.includes(imageUrl)); });
+        const updatedPayloadImages = (payload.images || [])
+            .filter((imageUrl) => { var _a; return !((_a = payload.deleteImages) === null || _a === void 0 ? void 0 : _a.includes(imageUrl)); })
+            .filter((imageUrl) => !restDBImages.includes(imageUrl));
+        payload.images = [...restDBImages, ...updatedPayloadImages];
+    }
     const updateTour = yield tour_model_1.Tour.findByIdAndUpdate(id, payload, {
         new: true,
         runValidators: true,
     });
+    if (payload.deleteImages &&
+        payload.deleteImages.length > 0 &&
+        existingTour.images &&
+        existingTour.images.length > 0) {
+        yield Promise.all(payload.deleteImages.map((url) => (0, cloudinary_config_1.deleteImageFromCloudinary)(url)));
+    }
     return updateTour;
 });
 const deleteTour = (id) => __awaiter(void 0, void 0, void 0, function* () {

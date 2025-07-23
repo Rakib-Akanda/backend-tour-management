@@ -1,3 +1,5 @@
+
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 import AppError from "../../errorHelpers/AppError";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
@@ -61,10 +63,20 @@ const updateDivision = async (id: string, payload: Partial<IDivision>) => {
     new: true,
     runValidators: true,
   });
+ 
+  // console.log(payload.thumbnail);
+
+  if (payload.thumbnail && existingDivision.thumbnail) {
+    await deleteImageFromCloudinary(existingDivision.thumbnail);
+  }
+
   return updateDivision;
 };
 const deleteDivision = async (id: string) => {
-  await Division.findByIdAndDelete(id);
+  const deletedDivision = await Division.findByIdAndDelete(id);
+  if (!deletedDivision) {
+    throw new AppError(404, "Division Not Found");
+  }
   return null;
 };
 

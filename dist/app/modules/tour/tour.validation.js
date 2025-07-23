@@ -44,6 +44,7 @@ exports.updateTourZodSchema = zod_1.default.object({
     tourType: zod_1.default.string().optional(),
     departureLocation: zod_1.default.string().optional(),
     arrivalLocation: zod_1.default.string().optional(),
+    deleteImages: zod_1.default.array(zod_1.default.string()).optional(),
 });
 exports.createTourTypeZodSchema = zod_1.default.object({
     name: zod_1.default.string(),
