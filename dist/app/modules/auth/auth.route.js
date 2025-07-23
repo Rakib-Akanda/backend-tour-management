@@ -22,11 +22,16 @@ const router = (0, express_1.Router)();
 router.post("/login", auth_controller_1.AuthControllers.credentialsLogin);
 router.post("/refresh-token", auth_controller_1.AuthControllers.getNewAccessToken);
 router.post("/logout", auth_controller_1.AuthControllers.logout);
+router.post("/change-password", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), auth_controller_1.AuthControllers.changePassword);
 router.post("/reset-password", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), auth_controller_1.AuthControllers.resetPassword);
+router.post("/set-password", (0, checkAuth_1.checkAuth)(...Object.values(user_interface_1.Role)), auth_controller_1.AuthControllers.setPassword);
 // /booking -> /login -> successful google login - /frontend
 router.get("/google", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const redirect = req.query.redirect || "/";
-    passport_1.default.authenticate("google", { scope: ["profile", "email"], state: redirect })(req, res, next);
+    passport_1.default.authenticate("google", {
+        scope: ["profile", "email"],
+        state: redirect,
+    })(req, res, next);
 }));
 // api/v1/auth/google/callback?state=/booking
 router.get("/google/callback", passport_1.default.authenticate("google", { failureRedirect: "/login" }), auth_controller_1.AuthControllers.googleCallbackController);

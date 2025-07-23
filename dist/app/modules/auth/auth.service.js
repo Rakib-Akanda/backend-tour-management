@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthServices = void 0;
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const http_status_codes_1 = require("http-status-codes");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 // import { IUser } from "../user/user.interface";
@@ -66,6 +67,17 @@ const getNewAccessToken = (refreshToken) => __awaiter(void 0, void 0, void 0, fu
     };
 });
 const resetPassword = (oldPassword, newPassword, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+    // const user = await User.findById(decodedToken.userId)
+    // if (!user) throw new AppError(StatusCodes.NOT_FOUND, "User not found");
+    // const isOldPasswordMatch = await bcryptjs.compare(oldPassword, user.password as string);
+    // if (!isOldPasswordMatch) {
+    //   throw new AppError(StatusCodes.UNAUTHORIZED, "Old password does not match")
+    // }
+    // user.password = await bcryptjs.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUND));
+    // await user.save()
+    return null;
+});
+const changePassword = (oldPassword, newPassword, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById(decodedToken.userId);
     if (!user)
         throw new AppError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, "User not found");
@@ -76,9 +88,30 @@ const resetPassword = (oldPassword, newPassword, decodedToken) => __awaiter(void
     user.password = yield bcryptjs_1.default.hash(newPassword, Number(env_1.envVars.BCRYPT_SALT_ROUND));
     yield user.save();
 });
+const setPassword = (userId, plainPassword) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById(userId);
+    if (!user) {
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, "User Not Found");
+    }
+    if (user.password &&
+        user.auths.some((providerObject) => providerObject.provider === "google")) {
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "You have already set your password. Now you can change the password from your profile password update.");
+    }
+    const hashedPassword = yield bcryptjs_1.default.hash(plainPassword, Number(env_1.envVars.BCRYPT_SALT_ROUND));
+    const credentialsProvider = {
+        provider: "credentials",
+        providerId: user.email,
+    };
+    const auths = [...user.auths, credentialsProvider];
+    user.password = hashedPassword;
+    user.auths = auths;
+    yield user.save();
+});
 // user - login - jwt token(email, role, _id) - booking / payment / payment or booking cancel-  token
 exports.AuthServices = {
     // credentialsLogin,
     getNewAccessToken,
-    resetPassword
+    changePassword,
+    setPassword,
+    resetPassword,
 };

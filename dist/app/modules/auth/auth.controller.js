@@ -41,7 +41,7 @@ const credentialsLogin = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
             // throw new AppError(401, "Some error")
             // next(error)
             // return new AppError(StatusCodes.UNAUTHORIZED, error)
-            // use it 
+            // use it
             // return next(error)
             return next(new AppError_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, error));
         }
@@ -60,7 +60,7 @@ const credentialsLogin = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
             data: {
                 accessToken: userToken.accessToken,
                 refreshToken: userToken.refreshToken,
-                user: rest
+                user: rest,
             },
         });
     }))(req, res, next);
@@ -99,12 +99,43 @@ const getNewAccessToken = (0, catchAsync_1.catchAsync)((req, res, next) => __awa
     });
 }));
 const logout = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie("accessToken", { httpOnly: true, secure: false, sameSite: "lax" });
-    res.clearCookie("refreshToken", { httpOnly: true, secure: false, sameSite: "lax" });
+    res.clearCookie("accessToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+    });
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+    });
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.StatusCodes.OK,
         message: "User Logged Out Successfully",
+        data: null,
+    });
+}));
+const changePassword = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user;
+    yield auth_service_1.AuthServices.resetPassword(oldPassword, newPassword, decodedToken);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.StatusCodes.OK,
+        message: "Password Changed Successfully",
+        data: null,
+    });
+}));
+const setPassword = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { password } = req.body;
+    const decodedToken = req.user;
+    yield auth_service_1.AuthServices.setPassword(decodedToken.userId, password);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.StatusCodes.OK,
+        message: "Password Set Successfully",
         data: null,
     });
 }));
@@ -133,7 +164,7 @@ const googleCallbackController = (0, catchAsync_1.catchAsync)((req, res, next) =
     }
     const tokenInfo = (0, userTokens_1.createUserToken)(user);
     (0, setCookie_1.setAuthCookie)(res, tokenInfo);
-    res.redirect(`${(env_1.envVars.FRONTEND_URL)}/${redirectTo}`);
+    res.redirect(`${env_1.envVars.FRONTEND_URL}/${redirectTo}`);
     // sendResponse(res, {
     //   success: true,
     //   statusCode: StatusCodes.OK,
@@ -146,5 +177,7 @@ exports.AuthControllers = {
     getNewAccessToken,
     logout,
     resetPassword,
-    googleCallbackController
+    changePassword,
+    setPassword,
+    googleCallbackController,
 };
