@@ -30,6 +30,9 @@ const checkAuth = (...authRoles) => (req, res, next) => __awaiter(void 0, void 0
         if (!isUserExist) {
             throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "User does not Exist");
         }
+        if (!isUserExist.isVerified) {
+            throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "User is not Verified");
+        }
         if (isUserExist.isActive === user_interface_1.IsActive.BLOCKED ||
             isUserExist.isActive === user_interface_1.IsActive.INACTIVE) {
             throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, `User is ${isUserExist.isActive}`);

@@ -24,7 +24,8 @@ const credentialsLogin = catchAsync(
 
         // use it
         // return next(error)
-        return next(new AppError(StatusCodes.UNAUTHORIZED, error));
+        // console.log(error, "error credential login");
+        return next(new AppError(error.statusCode || 401, error.message));
       }
       if (!user) {
         // return new AppError(StatusCodes.UNAUTHORIZED, info.message)

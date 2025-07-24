@@ -43,7 +43,8 @@ const credentialsLogin = (0, catchAsync_1.catchAsync)((req, res, next) => __awai
             // return new AppError(StatusCodes.UNAUTHORIZED, error)
             // use it
             // return next(error)
-            return next(new AppError_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, error));
+            // console.log(error, "error credential login");
+            return next(new AppError_1.default(error.statusCode || 401, error.message));
         }
         if (!user) {
             // return new AppError(StatusCodes.UNAUTHORIZED, info.message)
