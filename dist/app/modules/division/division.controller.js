@@ -14,7 +14,10 @@ const catchAsync_1 = require("../../utils/catchAsync");
 const sendResponse_1 = require("../../utils/sendResponse");
 const division_service_1 = require("./division.service");
 const createDivision = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield division_service_1.DivisionService.createDivision(req.body);
+    var _a;
+    // console.log({ file: req.file, body: req.body });
+    const payload = Object.assign(Object.assign({}, req.body), { thumbnail: (_a = req.file) === null || _a === void 0 ? void 0 : _a.path });
+    const result = yield division_service_1.DivisionService.createDivision(payload);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: 201,
         success: true,
@@ -42,8 +45,10 @@ const getSingleDivision = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(v
     });
 }));
 const updateDivision = (0, catchAsync_1.catchAsync)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const id = req.params.id;
-    const result = yield division_service_1.DivisionService.updateDivision(id, req.body);
+    const payload = Object.assign(Object.assign({}, req.body), { thumbnail: (_a = req.file) === null || _a === void 0 ? void 0 : _a.path });
+    const result = yield division_service_1.DivisionService.updateDivision(id, payload);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: 201,
         success: true,

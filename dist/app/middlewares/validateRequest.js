@@ -13,6 +13,10 @@ exports.validateRequest = void 0;
 // Higher Order function.
 const validateRequest = (zodSchema) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        // req.body = JSON.parse(req.body.data || {}) || req.body;
+        if (req.body.data) {
+            req.body = JSON.parse(req.body.data);
+        }
         req.body = yield zodSchema.parseAsync(req.body);
         next();
     }

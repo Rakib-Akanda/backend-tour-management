@@ -22,9 +22,7 @@ const payment_model_1 = require("../payment/payment.model");
 const payment_interface_1 = require("../payment/payment.interface");
 const tour_model_1 = require("../tour/tour.model");
 const sslCommerz_service_1 = require("../SSLCommerz/sslCommerz.service");
-const getTransactionId = () => {
-    return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-};
+const getTransactionId_1 = require("../../utils/getTransactionId");
 /** Transaction Rollback
  * Duplicate DB Collections / replica
  *
@@ -38,7 +36,7 @@ const getTransactionId = () => {
 
  * */
 const createBooking = (payload, userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const transactionId = getTransactionId();
+    const transactionId = (0, getTransactionId_1.getTransactionId)();
     const session = yield booking_model_1.Booking.startSession();
     session.startTransaction();
     try {

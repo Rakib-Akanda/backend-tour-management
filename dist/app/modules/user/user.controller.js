@@ -69,14 +69,36 @@ const getAllUsers = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(v
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.StatusCodes.OK,
-        message: "User Retrieved Successfully",
+        message: "Users Retrieved Successfully",
         data: result.data,
         meta: result.meta,
+    });
+}));
+const getSingleUsers = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const userId = req.params.id;
+    const result = yield user_service_1.UserServices.getSingleUsers(userId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.StatusCodes.OK,
+        message: "User Retrieved Successfully",
+        data: result.data,
+    });
+}));
+const getMe = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const decodedToken = req.user;
+    const result = yield user_service_1.UserServices.getMe(decodedToken.userId);
+    (0, sendResponse_1.sendResponse)(res, {
+        success: true,
+        statusCode: http_status_codes_1.StatusCodes.OK,
+        message: "Your Profile Retrieved Successfully",
+        data: result.data,
     });
 }));
 exports.UserController = {
     createUser,
     getAllUsers,
+    getSingleUsers,
+    getMe,
     updateUser,
 };
 // before controller

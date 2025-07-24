@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DivisionService = void 0;
+const cloudinary_config_1 = require("../../config/cloudinary.config");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const division_model_1 = require("./division.model");
 const createDivision = (payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -71,10 +72,17 @@ const updateDivision = (id, payload) => __awaiter(void 0, void 0, void 0, functi
         new: true,
         runValidators: true,
     });
+    // console.log(payload.thumbnail);
+    if (payload.thumbnail && existingDivision.thumbnail) {
+        yield (0, cloudinary_config_1.deleteImageFromCloudinary)(existingDivision.thumbnail);
+    }
     return updateDivision;
 });
 const deleteDivision = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    yield division_model_1.Division.findByIdAndDelete(id);
+    const deletedDivision = yield division_model_1.Division.findByIdAndDelete(id);
+    if (!deletedDivision) {
+        throw new AppError_1.default(404, "Division Not Found");
+    }
     return null;
 });
 exports.DivisionService = {

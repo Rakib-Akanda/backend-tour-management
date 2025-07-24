@@ -20,6 +20,8 @@ const user_model_1 = require("../modules/user/user.model");
 const user_interface_1 = require("../modules/user/user.interface");
 const passport_local_1 = require("passport-local");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const http_status_codes_1 = require("http-status-codes");
+const AppError_1 = __importDefault(require("../errorHelpers/AppError"));
 passport_1.default.use(new passport_local_1.Strategy({ usernameField: "email", passwordField: "password" }, (email, password, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const isUserExist = yield user_model_1.User.findOne({ email });
@@ -27,14 +29,28 @@ passport_1.default.use(new passport_local_1.Strategy({ usernameField: "email", p
         if (!isUserExist) {
             return done(null, false, { message: "User does not exist" });
         }
-        // if (!isUserExist) {
-        //     return done("User does not exist")
-        // }
-        const isGoogleAuthenticated = isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.auths.some(providerObject => { var _a; return ((_a = providerObject.provider) === null || _a === void 0 ? void 0 : _a.toLocaleLowerCase()) == "google"; });
-        if (isGoogleAuthenticated && !isUserExist.password) {
-            done(null, false, { message: "You have  authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for you Gmail and then you can login with email and password" });
+        if (!isUserExist.isVerified) {
+            // throw new AppError(StatusCodes.BAD_REQUEST, "User is not Verified");
+            return done(http_status_codes_1.StatusCodes.BAD_REQUEST, "User is not Verified");
         }
-        ;
+        if (isUserExist.isActive === user_interface_1.IsActive.BLOCKED ||
+            isUserExist.isActive === user_interface_1.IsActive.INACTIVE) {
+            // throw new AppError(
+            //   StatusCodes.BAD_REQUEST,
+            //   `User is ${isUserExist.isActive}`
+            // );
+            return done(`User is ${isUserExist.isActive}`);
+        }
+        if (isUserExist.isDeleted) {
+            // throw new AppError(StatusCodes.BAD_REQUEST, "User is deleted");
+            throw new AppError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "User is deleted");
+        }
+        const isGoogleAuthenticated = isUserExist === null || isUserExist === void 0 ? void 0 : isUserExist.auths.some((providerObject) => { var _a; return ((_a = providerObject.provider) === null || _a === void 0 ? void 0 : _a.toLocaleLowerCase()) === "google"; });
+        if (isGoogleAuthenticated && !isUserExist.password) {
+            return done(null, false, {
+                message: "You have  authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for you Gmail and then you can login with email and password",
+            });
+        }
         // if (isGoogleAuthenticated) {
         //     return done("You have  authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for you Gmail and then you can login with email and password");
         // };
@@ -42,7 +58,6 @@ passport_1.default.use(new passport_local_1.Strategy({ usernameField: "email", p
         if (!isPasswordMatched) {
             return done(null, false, { message: "Password does not match" });
         }
-        ;
         return done(null, isUserExist);
     }
     catch (error) {
@@ -61,9 +76,27 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
         if (!email) {
             return done(null, false, { message: "No email found" });
         }
-        let user = yield user_model_1.User.findOne({ email });
-        if (!user) {
-            user = yield user_model_1.User.create({
+        let isUserExist = yield user_model_1.User.findOne({ email });
+        if (isUserExist && !isUserExist.isVerified) {
+            // throw new AppError(StatusCodes.BAD_REQUEST, "User is not Verified");
+            // return done(StatusCodes.BAD_REQUEST, "User is not Verified");
+            return done(null, false, { message: "User is not verified" });
+        }
+        if (isUserExist &&
+            (isUserExist.isActive === user_interface_1.IsActive.BLOCKED ||
+                isUserExist.isActive === user_interface_1.IsActive.INACTIVE)) {
+            // throw new AppError(
+            //   StatusCodes.BAD_REQUEST,
+            //   `User is ${isUserExist.isActive}`
+            // );
+            return done(`User is ${isUserExist.isActive}`);
+        }
+        if (isUserExist && isUserExist.isDeleted) {
+            // throw new AppError(StatusCodes.BAD_REQUEST, "User is deleted");
+            return done(null, false, { message: "User is deleted" });
+        }
+        if (!isUserExist) {
+            isUserExist = yield user_model_1.User.create({
                 email,
                 name: profile.displayName,
                 picture: (_b = profile.photos) === null || _b === void 0 ? void 0 : _b[0].value,
@@ -72,12 +105,12 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
                 auths: [
                     {
                         provider: "google",
-                        providerId: profile.id
-                    }
-                ]
+                        providerId: profile.id,
+                    },
+                ],
             });
         }
-        return done(null, user);
+        return done(null, isUserExist);
     }
     catch (error) {
         // eslint-disable-next-line no-console
@@ -88,7 +121,7 @@ passport_1.default.use(new passport_google_oauth20_1.Strategy({
 // Frontend localhost:5713/login?redirect=/booking -> localhost:5000/api/v1/auth/google?redirect=/booking -> passport -> Google OAuth Consent -> gmail login -> successful ->  callback url localhost:5000/api/v1/auth/google/callback -> db store -> token
 // Bridge == GOOGLE -> user db store -> token
 // Custom -> email, password, role : USER, name... -> registration -> DB -> 1 User create
-// Google -> req -> google -> successful : JWT token: Role,  email -> DB - store -> token - api access 
+// Google -> req -> google -> successful : JWT token: Role,  email -> DB - store -> token - api access
 passport_1.default.serializeUser((user, done) => {
     done(null, user._id);
 });

@@ -9,10 +9,7 @@ import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { Tour } from "../tour/tour.model";
 import { SSLService } from "../SSLCommerz/sslCommerz.service";
 import { ISSLCommerz } from "../SSLCommerz/sslCommerz.interface";
-
-const getTransactionId = () => {
-  return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-};
+import { getTransactionId } from "../../utils/getTransactionId";
 
 /** Transaction Rollback
  * Duplicate DB Collections / replica
