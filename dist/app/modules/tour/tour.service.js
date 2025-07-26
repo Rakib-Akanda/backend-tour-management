@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TourService = void 0;
+const http_status_codes_1 = require("http-status-codes");
 const cloudinary_config_1 = require("../../config/cloudinary.config");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const QueryBuilder_1 = require("../../utils/QueryBuilder");
@@ -42,6 +43,9 @@ const getAllTours = (query) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const getSingleTour = (slug) => __awaiter(void 0, void 0, void 0, function* () {
     const tour = yield tour_model_1.Tour.findOne({ slug });
+    if (!tour) {
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, "Not found tour and please check your slug");
+    }
     return {
         data: tour,
     };

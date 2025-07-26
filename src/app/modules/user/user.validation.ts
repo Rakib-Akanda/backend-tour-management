@@ -3,9 +3,9 @@ import { IsActive, Role } from "./user.interface";
 
 export const createUserZodSchema = z.object({
   name: z
-      .string({ invalid_type_error: "Name must be string" })
-      .min(2, { message: "Name too short. Minimum 2 character long" })
-      .max(50, { message: "Name too long" }),
+    .string({ invalid_type_error: "Name must be string" })
+    .min(2, { message: "Name too short. Minimum 2 character long" })
+    .max(50, { message: "Name too long" }),
   email: z
     .string({ invalid_type_error: "Email must be string" })
     .email({ message: "Invalid email format." })
@@ -43,20 +43,6 @@ export const updateUserZodSchema = z.object({
     .string({ invalid_type_error: "Name must be string" })
     .min(2, { message: "Name too short. Minimum 2 character long" })
     .max(50, { message: "Name too long" })
-    .optional(),
-  // 1 uppercase, 1 special character, 1 digit, 8 character min
-  password: z
-    .string({ invalid_type_error: "Password must be string." })
-    .min(8, { message: "Password must be at least 8 characters" })
-    .regex(/^(?=.*[A-Z])/, {
-      message: "Password must contain at least 1 uppercase letter",
-    })
-    .regex(/^(?=.*[!@#$%^&*])/, {
-      message: "Password must be at least 1 special character",
-    })
-    .regex(/^(?=.*\d)/, {
-      message: "Password must contain at least 1 number",
-    })
     .optional(),
   phone: z
     .string({ invalid_type_error: "Phone number must be a string" })

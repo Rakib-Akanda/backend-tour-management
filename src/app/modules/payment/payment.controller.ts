@@ -1,9 +1,11 @@
+/* eslint-disable no-console */
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { PaymentService } from "./payment.service";
 import { envVars } from "../../config/env";
 import { sendResponse } from "../../utils/sendResponse";
 import { StatusCodes } from "http-status-codes";
+import { SSLService } from "../SSLCommerz/sslCommerz.service";
 
 const initPayment = catchAsync(async (req: Request, res: Response) => {
   const bookingId = req.params.bookingId;
@@ -61,6 +63,16 @@ const getInvoiceDownloadUrl = catchAsync(
     });
   }
 );
+const validatePayment = catchAsync(async (req: Request, res: Response) => {
+  console.log("SSLCommerz IPN: ", req.body);
+  await SSLService.validatePayment(req.body);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: "Payment Validated Successfully",
+    data: null,
+  });
+});
 
 export const PaymentController = {
   initPayment,
@@ -68,4 +80,5 @@ export const PaymentController = {
   failPayment,
   cancelPayment,
   getInvoiceDownloadUrl,
+  validatePayment,
 };

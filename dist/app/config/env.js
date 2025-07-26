@@ -45,6 +45,7 @@ const loadEnvVariables = () => {
         "REDIS_PASSWORD",
         "REDIS_HOST",
         "REDIS_PORT",
+        "SSL_IPN_URL",
     ];
     requiredEnvVariables.forEach((key) => {
         if (!process.env[key]) {
@@ -79,6 +80,7 @@ const loadEnvVariables = () => {
             SSL_SUCCESS_FRONTEND_URL: process.env.SSL_SUCCESS_FRONTEND_URL,
             SSL_FAIL_FRONTEND_URL: process.env.SSL_FAIL_FRONTEND_URL,
             SSL_CANCEL_FRONTEND_URL: process.env.SSL_CANCEL_FRONTEND_URL,
+            SSL_IPN_URL: process.env.SSL_IPN_URL,
         },
         cloudinary: {
             CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,

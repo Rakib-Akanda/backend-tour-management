@@ -12,6 +12,7 @@ const tour_route_1 = require("../modules/tour/tour.route");
 const booking_route_1 = __importDefault(require("../modules/booking/booking.route"));
 const payment_route_1 = require("../modules/payment/payment.route");
 const otp_route_1 = require("../modules/otp/otp.route");
+const stats_route_1 = require("../modules/stats/stats.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -41,6 +42,10 @@ const moduleRoutes = [
     {
         path: "/otp",
         route: otp_route_1.OtpRoutes,
+    },
+    {
+        path: "/stats",
+        route: stats_route_1.StatsRoutes,
     },
 ];
 moduleRoutes.forEach((route) => {

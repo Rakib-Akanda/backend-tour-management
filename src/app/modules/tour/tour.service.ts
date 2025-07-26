@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 import AppError from "../../errorHelpers/AppError";
 import { QueryBuilder } from "../../utils/QueryBuilder";
@@ -31,6 +32,12 @@ const getAllTours = async (query: Record<string, string>) => {
 };
 const getSingleTour = async (slug: string) => {
   const tour = await Tour.findOne({ slug });
+  if (!tour) {
+    throw new AppError(
+      StatusCodes.NOT_FOUND,
+      "Not found tour and please check your slug"
+    );
+  }
   return {
     data: tour,
   };
@@ -76,7 +83,9 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     existingTour.images &&
     existingTour.images.length > 0
   ) {
-    await Promise.all(payload.deleteImages.map((url) => deleteImageFromCloudinary(url)));
+    await Promise.all(
+      payload.deleteImages.map((url) => deleteImageFromCloudinary(url))
+    );
   }
   return updateTour;
 };

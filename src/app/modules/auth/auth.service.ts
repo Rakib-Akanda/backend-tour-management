@@ -94,8 +94,15 @@ const changePassword = async (
   decodedToken: JwtPayload
 ) => {
   const user = await User.findById(decodedToken.userId);
-  if (!user) throw new AppError(StatusCodes.NOT_FOUND, "User not found");
-
+  if (!user) {
+    throw new AppError(StatusCodes.NOT_FOUND, "User not found");
+  }
+  if (newPassword === newPassword) {
+    throw new AppError(
+      StatusCodes.CONFLICT,
+      "New password cannot be the same as the old password"
+    );
+  }
   const isOldPasswordMatch = await bcryptjs.compare(
     oldPassword,
     user.password as string
