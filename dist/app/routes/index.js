@@ -11,6 +11,7 @@ const division_route_1 = require("../modules/division/division.route");
 const tour_route_1 = require("../modules/tour/tour.route");
 const booking_route_1 = __importDefault(require("../modules/booking/booking.route"));
 const payment_route_1 = require("../modules/payment/payment.route");
+const otp_route_1 = require("../modules/otp/otp.route");
 exports.router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -36,6 +37,10 @@ const moduleRoutes = [
     {
         path: "/payment",
         route: payment_route_1.PaymentRoutes,
+    },
+    {
+        path: "/otp",
+        route: otp_route_1.OtpRoutes,
     },
 ];
 moduleRoutes.forEach((route) => {

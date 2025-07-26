@@ -16,6 +16,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
 const env_1 = require("./app/config/env");
 const seedSuperAdmin_1 = require("./app/utils/seedSuperAdmin");
+const redis_config_1 = require("./app/config/redis.config");
 let server;
 const bootStrap = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -31,6 +32,7 @@ const bootStrap = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 //IIFE
 (() => __awaiter(void 0, void 0, void 0, function* () {
+    yield (0, redis_config_1.connectRedis)();
     yield bootStrap();
     yield (0, seedSuperAdmin_1.seedSuperAdmin)();
 }))();
