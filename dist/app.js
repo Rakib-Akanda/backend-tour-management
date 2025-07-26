@@ -17,6 +17,7 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true })); // extra safety for form data
 app.use((0, cookie_parser_1.default)());
+app.set("trust proxy", 1);
 app.use((0, cors_1.default)({
     origin: env_1.envVars.FRONTEND_URL,
     credentials: true,
