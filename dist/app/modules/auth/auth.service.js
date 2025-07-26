@@ -83,8 +83,12 @@ const resetPassword = (payload, decodedToken) => __awaiter(void 0, void 0, void 
 });
 const changePassword = (oldPassword, newPassword, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById(decodedToken.userId);
-    if (!user)
+    if (!user) {
         throw new AppError_1.default(http_status_codes_1.StatusCodes.NOT_FOUND, "User not found");
+    }
+    if (newPassword === newPassword) {
+        throw new AppError_1.default(http_status_codes_1.StatusCodes.CONFLICT, "New password cannot be the same as the old password");
+    }
     const isOldPasswordMatch = yield bcryptjs_1.default.compare(oldPassword, user.password);
     if (!isOldPasswordMatch) {
         throw new AppError_1.default(http_status_codes_1.StatusCodes.UNAUTHORIZED, "Old password does not match");

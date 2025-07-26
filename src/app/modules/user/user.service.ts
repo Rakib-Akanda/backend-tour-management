@@ -39,20 +39,75 @@ const updateUser = async (
   payload: Partial<IUser>,
   decodedToken: JwtPayload
 ) => {
+  if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
+    if (userId !== decodedToken.userId) {
+      throw new AppError(StatusCodes.UNAUTHORIZED, "You are not authorized");
+    }
+  }
   const ifUserExist = await User.findById(userId);
 
   if (!ifUserExist) {
     throw new AppError(StatusCodes.NOT_FOUND, "User Not Found");
-  };
+  }
 
-   /** email - can not update
-   * update--
-   * name, phone, password, address,
-   * password - rehashing
-   * only admin and superAdmin can update - role, isDeleted....
-   * promoting to super admin - only super admin
-   * 
-   * 
+  if (
+    decodedToken.role === Role.ADMIN &&
+    ifUserExist.role === Role.SUPER_ADMIN
+  ) {
+    throw new AppError(StatusCodes.UNAUTHORIZED, "You are not authorized");
+  }
+
+  if (payload.role) {
+    if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
+      throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
+    }
+    // if (payload.role === Role.SUPER_ADMIN && decodedToken.role === Role.ADMIN) {
+    //   throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
+    // }
+  }
+  if (payload.isActive || payload.isDeleted || payload.isVerified) {
+    if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
+      throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
+    }
+  }
+  const newUpdateUser = await User.findByIdAndUpdate(userId, payload, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+  return newUpdateUser;
+};
+
+const getAllUsers = async () => {
+  const users = await User.find({}).select("-password");
+
+  const totalUser = await User.countDocuments();
+  return { data: users, meta: { total: totalUser } };
+};
+const getSingleUsers = async (userId: string) => {
+  const user = await User.findById(userId).select("-password");
+  return { data: user };
+};
+const getMe = async (userId: string) => {
+  const user = await User.findById(userId).select("-password");
+  return { data: user };
+};
+
+export const UserServices = {
+  createUser,
+  getAllUsers,
+  getSingleUsers,
+  getMe,
+  updateUser,
+};
+
+/** update user
+    email - can not update
+    update--
+    name, phone, password, address,
+    password - rehashing
+    only admin and superAdmin can update - role, isDeleted....
+    promoting to super admin - only super admin
+      
  এই কোডটি মূলত কেউ কোনো ইউজারের ডেটা আপডেট করার সময়, আপডেট করতে পারবে কি না, সেই অধিকার (authorization) যাচাই করছে।
 
 ✅ ব্যাখ্যা:
@@ -97,51 +152,3 @@ verified/active/deleted status পরিবর্তন করতে পার�
 
 ADMIN হলেও সে কাউকে SUPER_ADMIN বানাতে পারবে না।
   */
-  if (payload.role) {
-    if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
-      throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
-    }
-    if (payload.role === Role.SUPER_ADMIN && decodedToken.role === Role.ADMIN) {
-      throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
-    }
-  }
-  if (payload.isActive || payload.isDeleted || payload.isVerified) {
-    if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
-      throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
-    }
-  }
-  if (payload.password) {
-    payload.password = await bcryptjs.hash(
-      payload.password,
-      envVars.BCRYPT_SALT_ROUND
-    );
-  }
-  const newUpdateUser = await User.findByIdAndUpdate(userId, payload, {
-    new: true,
-    runValidators: true,
-  }).select("-password");
-  return newUpdateUser;
-};
-
-const getAllUsers = async () => {
-  const users = await User.find({}).select("-password");
-
-  const totalUser = await User.countDocuments();
-  return { data: users, meta: { total: totalUser } };
-};
-const getSingleUsers = async (userId: string) => {
-  const user = await User.findById(userId).select("-password");
-  return { data: user };
-};
-const getMe = async (userId: string) => {
-  const user = await User.findById(userId).select("-password");
-  return { data: user };
-};
-
-export const UserServices = {
-  createUser,
-  getAllUsers,
-  getSingleUsers,
-  getMe,
-  updateUser,
-};
