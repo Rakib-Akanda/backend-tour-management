@@ -24,7 +24,7 @@ const seedSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
             email: env_1.envVars.SUPER_ADMIN_EMAIL,
         });
         if (isSuperAdminExist) {
-            console.log("Super Admin Already Exist!!");
+            console.log("✅ Super Admin Already Exist!!");
             return;
         }
         console.log("Trying to crate super admin.....");
@@ -43,7 +43,7 @@ const seedSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
             auths: [authProvider],
         };
         const superAdmin = yield user_model_1.User.create(payload);
-        console.log("Super Admin Created Successfully \n");
+        console.log("✅ Super Admin Created Successfully \n");
         console.log(superAdmin);
     }
     catch (error) {

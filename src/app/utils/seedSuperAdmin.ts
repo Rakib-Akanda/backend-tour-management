@@ -9,7 +9,7 @@ export const seedSuperAdmin = async () => {
       email: envVars.SUPER_ADMIN_EMAIL,
     });
     if (isSuperAdminExist) {
-      console.log("Super Admin Already Exist!!");
+      console.log("✅ Super Admin Already Exist!!");
       return;
     }
     console.log("Trying to crate super admin.....");
@@ -32,7 +32,7 @@ export const seedSuperAdmin = async () => {
     };
 
     const superAdmin = await User.create(payload);
-    console.log("Super Admin Created Successfully \n");
+    console.log("✅ Super Admin Created Successfully \n");
     console.log(superAdmin);
   } catch (error) {
     console.log(error);
