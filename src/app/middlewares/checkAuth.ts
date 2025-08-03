@@ -11,6 +11,7 @@ export const checkAuth =
   (...authRoles: string[]) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // const accessToken = req.headers.authorization?.split(" ")[1]; eta token Bearer TOKEN er jonno just etia korte 
       const accessToken = req.headers.authorization;
       if (!accessToken) {
         throw new AppError(StatusCodes.FORBIDDEN, "No Token Received");
